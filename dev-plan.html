@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Development Plan - Revised</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="my_style.css">
+    <style>
+        .revised {
+            border-left: 3px solid #f5a623;
+            background: rgba(245,166,35,0.06);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 8px 0;
+        }
+        .revised-label {
+            display: inline-block;
+            font-size: 0.58rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: #f5a623;
+            color: #0d0d0d;
+            border-radius: 3px;
+            padding: 2px 7px;
+            margin-bottom: 8px;
+        }
+        .new-section-label {
+            display: inline-block;
+            font-size: 0.58rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: #6dbe6d;
+            color: #0d0d0d;
+            border-radius: 3px;
+            padding: 2px 7px;
+            margin-bottom: 8px;
+        }
+        .struck {
+            text-decoration: line-through;
+            color: #555;
+            font-size: 0.85em;
+        }
+        .revision-note {
+            font-size: 0.8rem;
+            color: #f5a623;
+            font-style: italic;
+            margin-top: 6px;
+        }
+        .new-content { color: #e8e8e8; }
+    </style>
+</head>
+<body>
+
+    <header id="header">
+        <img src="imgs/Interconnected unity in blue and black.png" alt="Team Logo" id="Teamlogo">
+        <nav id="nav">
+            <a href="index.html" class="navlink">Home</a>
+            <a href="about.html" class="navlink">About Us</a>
+            <a href="project.html" class="navlink">Projects</a>
+            <a href="showcase.html" class="navlink">Showcase</a>
+            <a href="work.html" class="navlink">Work</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Development Plan <span style="font-size:0.55em;color:#f5a623;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;vertical-align:middle;">&nbsp;Revised - Final Delivery</span></h1>
+
+        <p style="font-size:0.8rem;color:#555;margin-bottom:24px;line-height:1.7;">
+            Revisions are marked with an <span class="revised-label" style="margin:0 2px;">Revised</span> amber badge.
+            New sections are marked with a <span class="new-section-label" style="margin:0 2px;">New</span> green badge.
+            Original text that was removed is shown with a <span class="struck">strikethrough</span>.
+        </p>
+
+        <div class="critique-card">
+
+            <!-- 1. NAMES -->
+            <details class="dropdown" open>
+                <summary>1. Names</summary>
+                <p><strong>Team Name:</strong> Built by Four</p>
+                <p><strong>Team Members:</strong> Saharsh Sukumar, Micai Fordem, Sumer Aulaks, Angad Johal</p>
+                <p><strong>Client:</strong> McMaster Computer Science Society (CSS)</p>
+                <p><strong>App Name:</strong> CSS Event &amp; Productivity Dashboard</p>
+            </details>
+
+            <!-- 2. PURPOSE -->
+            <details class="dropdown" open>
+                <summary>2. Purpose</summary>
+                <p>
+                    The CSS Event &amp; Productivity Dashboard is a web app we built for the McMaster Computer Science Society. The society had two main problems they were dealing with - event management was all over the place, and there was no real way to track what each team was doing.
+                </p>
+                <br>
+                <p>
+                    Everything was being coordinated through group chats. Members had to scroll way back through old messages just to find out when an event was, where it was, or how many people were coming. There was also no record of past work at all - if you wanted to know what happened at an event or who contributed to it, there was nothing to look at. They had biweekly check-in meetings but that only helped so much.
+                </p>
+                <br>
+                <p>
+                    Our app solves both of those. Executives get a central place to create, edit, and delete events. All members get a clean events page where they can browse upcoming events and RSVP with one click. The RSVP counter updates live without needing to refresh. On the exec side, there is a dashboard showing total events, average RSVPs, monthly event trends on a bar chart, and a breakdown of how much each sub-team contributed to events.
+                </p>
+                <br>
+                <p>
+                    Access is role-based. Executives see everything including the dashboard and event management tools. Regular members just see the events page and the calendar. This keeps things simple and makes sure people only see what they need to.
+                </p>
+            </details>
+
+            <!-- 3. DATA -->
+            <details class="dropdown" open>
+                <summary>3. Data Description</summary>
+
+                <details class="dropdown" open>
+                    <summary>Users</summary>
+                    <p>Stores login info and each person's role so the app knows what to show them. This table gets checked every time someone logs in.</p>
+                    <ul>
+                        <li>user_id - INT, PRIMARY KEY, AUTO_INCREMENT</li>
+                        <li>name - VARCHAR</li>
+                        <li>email - VARCHAR</li>
+                        <li>password - VARCHAR (bcrypt hash)</li>
+                        <li>role - ENUM ('executive' / 'member')</li>
+                        <li>created_at - DATETIME</li>
+                    </ul>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content">Members can now register themselves through <strong>register.php</strong>. We also added a <code>created_at</code> column to track when accounts were made. The <code>role</code> field uses ENUM so invalid values can't be entered - anyone who signs up through the form always gets assigned <code>member</code>. Executives are still added directly through <code>setup.sql</code>.</p>
+                        <p class="revision-note">Reason: The client wanted members to be able to join on their own without an exec having to manually add them each time.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Events</summary>
+                    <p>Stores all event info created by executives. Every card on the events page comes from this table. Execs can add, edit, and delete rows. Members can only read from it.</p>
+                    <ul>
+                        <li>event_id - INT, PRIMARY KEY, AUTO_INCREMENT</li>
+                        <li>title - VARCHAR</li>
+                        <li>description - TEXT</li>
+                        <li>date - DATE</li>
+                        <li>time - TIME</li>
+                        <li>location - VARCHAR</li>
+                        <li>capacity - INT</li>
+                        <li>category - ENUM ('academic','networking','social','workshop','competition')</li>
+                        <li>created_by - INT, FOREIGN KEY (references Users)</li>
+                        <li>created_at - DATETIME</li>
+                    </ul>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>RSVPs</summary>
+                    <p>Links users to events they are interested in. Each row is one RSVP. The interest counter on each event card is calculated by counting rows for that event_id. A user can only RSVP once per event.</p>
+                    <ul>
+                        <li>rsvp_id - INT, PRIMARY KEY, AUTO_INCREMENT</li>
+                        <li>user_id - INT, FOREIGN KEY (references Users)</li>
+                        <li>event_id - INT, FOREIGN KEY (references Events)</li>
+                        <li>status - ENUM ('interested', 'not_going')</li>
+                        <li>rsvpd_at - DATETIME</li>
+                    </ul>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Team_Stats</summary>
+                    <p>Stores each sub-team's contribution for a specific event. This is what the productivity section of the dashboard pulls from. Execs log a row after each event and can also edit or delete existing entries if something was entered wrong.</p>
+                    <ul>
+                        <li>stat_id - INT, PRIMARY KEY, AUTO_INCREMENT</li>
+                        <li>event_id - INT, FOREIGN KEY (references Events)</li>
+                        <li>main_team - ENUM ('communications','studentsupport','events','outreach','webtech')</li>
+                        <li>sub_team - ENUM ('design','socialmedia','academic','mentorship') - nullable</li>
+                        <li>contribution - TEXT</li>
+                        <li>members_involved - INT</li>
+                        <li>logged_by - INT, FOREIGN KEY (references Users)</li>
+                        <li>logged_at - DATETIME</li>
+                    </ul>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content">The original plan had a single <code>team_name</code> column. During development we changed this to two columns (<code>main_team</code> and an optional <code>sub_team</code>) because the CSS team structure has sub-teams inside some of the main teams. This lets the dashboard show a proper breakdown at both levels. We also added edit and delete so execs can fix mistakes in what they logged.</p>
+                        <p class="revision-note">Reason: The CSS team structure was more complex than we originally planned for. The edit/delete came up during testing when we realized there was no way to fix a wrong entry.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Organization_Info</summary>
+                    <p>Holds basic info about CSS like the name, contact email, and social media links. This table only ever has one row.</p>
+                    <ul>
+                        <li>org_id - INT, PRIMARY KEY</li>
+                        <li>name - VARCHAR</li>
+                        <li>description - TEXT</li>
+                        <li>email - VARCHAR</li>
+                        <li>social_links - TEXT (JSON string)</li>
+                    </ul>
+                </details>
+
+            </details>
+
+            <!-- 4. FUNCTIONS -->
+            <details class="dropdown" open>
+                <summary>4. Functions Performed by the App</summary>
+
+                <details class="dropdown" open>
+                    <summary>Authentication System</summary>
+                    <p>
+                        When someone submits the login form, PHP runs a SELECT query on the Users table looking for a matching email and password. If it finds one, it starts a session and stores the user's role in $_SESSION. Every page checks the session when it loads - if there is no session, the user gets sent back to the login page. The role stored in the session controls what each person can see and do on the site.
+                    </p>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content"><strong>We added a registration page (register.php).</strong> New members fill out their name, McMaster email, and a password. PHP checks that the email ends in @mcmaster.ca, makes sure the account does not already exist, hashes the password using <code>password_hash()</code>, and adds a new row to Users with <code>role = 'member'</code>. After that it sets a flash message in the session and redirects to the login page.</p>
+                        <p class="revision-note">Reason: Before this, a new member could only get an account if an exec manually added them. The client said that was too much extra work.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Event Management</summary>
+                    <p>
+                        Create event - PHP runs INSERT INTO Events with the form data. Execs only.<br>
+                        View events - PHP runs SELECT * FROM Events sorted by date. All logged-in users can see this.<br>
+                        Edit event - A pre-filled form submits an UPDATE query for that event_id. Execs only.<br>
+                        Delete event - PHP runs DELETE FROM Events for the selected id. Execs only. Because of the CASCADE foreign keys, deleting an event also removes its RSVPs and Team_Stats rows automatically.
+                    </p>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content"><strong>We added sorting to the events page.</strong> Users can now sort by Date (the default, grouped by month), by Name A-Z (grouped by first letter), or by Time of Day (grouped into Morning, Afternoon, Evening, Night). The sorting happens server-side so it works together with the category filter. We also moved the category filter itself server-side so it does not reset when you change the sort.</p>
+                        <p class="revision-note">Reason: As we added more events during testing, the page got harder to scan through. The client also mentioned that members usually look for events based on what time of day they are free.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>RSVP System</summary>
+                    <p>
+                        Mark interest - PHP runs INSERT INTO RSVPs with the current user_id and event_id.<br>
+                        Remove interest - PHP runs DELETE FROM RSVPs where both user_id and event_id match.<br>
+                        Show live count - SELECT COUNT(*) FROM RSVPs WHERE event_id = [id]. JavaScript updates the button and counter right away without reloading the page.<br>
+                        The RSVP button switches between "RSVP" and "Interested" depending on whether the current user has already clicked it.
+                    </p>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Calendar View</summary>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content"><strong>We added a lot more to calendar.php.</strong> It now has three view modes that switch without reloading the page: a monthly calendar grid, a year view that shows all 12 months at once as small cards, and a list view of upcoming events. In the year view there is a dropdown to jump between years. Clicking on any day in the monthly view opens a modal with the events for that day and RSVP buttons. Execs also get a heatmap showing RSVP activity per day and a link to create a new event on the clicked date.</p>
+                        <p class="revision-note">Reason: The client said they plan things months ahead and wanted to see the full year without clicking through one month at a time.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Dashboard &amp; Analytics</summary>
+                    <p>
+                        Total events hosted - SELECT COUNT(*) FROM Events.<br>
+                        Average RSVP count - SELECT AVG() on a subquery that counts RSVPs per event.<br>
+                        Event trends - SELECT COUNT(*), MONTH(date) FROM Events GROUP BY MONTH(date). This feeds the bar chart.<br>
+                        Team productivity - SELECT main_team, members_involved FROM Team_Stats, shown as progress bars per sub-team.
+                    </p>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content">We ended up building the bar chart with plain CSS and HTML instead of Chart.js like we originally planned. Chart.js was causing styling issues with our dark theme so we scrapped it. The productivity section now supports both main teams and sub-teams. Execs can also edit and delete contribution entries right from the dashboard using modals - we added edit_contribution.php and delete_contribution.php to handle those.</p>
+                        <p class="revision-note">Reason: Chart.js did not play nicely with our CSS. Edit/delete on contributions came up during testing - we had no way to fix a mistake once something was logged.</p>
+                    </div>
+                </details>
+
+            </details>
+
+            <!-- 5. ROLES -->
+            <details class="dropdown" open>
+                <summary>5. Roles of Team Members</summary>
+                <p>All four of us contributed equally across the project. Each person led one main area but everyone helped with testing, fixing bugs, and cleaning up the code.</p>
+                <br>
+
+                <div class="roles-table-wrap">
+                    <table class="roles-table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Primary Area</th>
+                                <th>Deliverables</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Saharsh Sukumar</strong></td>
+                                <td>Dashboard &amp; Analytics</td>
+                                <td>CSS bar chart for event trends, the four stat counter cards at the top, and all the SQL aggregation queries that feed the dashboard. Also helped with testing and debugging across the final increment.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Micai Fordem</strong></td>
+                                <td>Event Management</td>
+                                <td>Events page card layout, event creation form, edit and delete functionality, all INSERT/UPDATE/DELETE queries for Events. Also added the three sort modes, moved the category filter server-side, added the My RSVPs badge, and fixed the blank space issue with empty descriptions.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sumer Aulaks</strong></td>
+                                <td>RSVP &amp; Calendar</td>
+                                <td>RSVP toggle with live AJAX counter, INSERT/DELETE RSVP queries. Extended the calendar with Year View, fully JS-driven view switching between Calendar/Year/List, and the day modal with inline RSVP buttons.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Angad Johal</strong></td>
+                                <td>Productivity Tracking &amp; Authentication</td>
+                                <td>Team Stats section of the dashboard, progress bars per sub-team, log/edit/delete contribution forms and the handler files. Also built register.php with email validation, bcrypt hashing, and the password strength meter, and updated login.php to link to it.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+
+            <!-- 6. WIREFRAMES -->
+            <details class="dropdown" open>
+                <summary>6. Wireframes</summary>
+
+                <details class="dropdown" open>
+                    <summary>Login Page</summary>
+                    <div class="wireframe-wrap">
+                        <p>A centered card with email, password, role selector, and a login button. PHP checks the Users table and starts a session if the credentials match.</p>
+                        <img src="imgs/Login.png" alt="Login wireframe" style="max-width:500px;width:100%;border-radius:8px;border:1px solid #1e1e1e;">
+                    </div>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content">We added a "New member? Create an account" link below the form that goes to register.php. The page also now shows a flash message when someone gets redirected here after registering.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Registration Page <span class="new-section-label" style="margin-left:8px;">New</span></summary>
+                    <div class="wireframe-wrap">
+                        <p>Same card style as the login page. Has four fields: Full Name, McMaster Email (@mcmaster.ca only), Password, and Confirm Password. There is a password strength bar under the password field and a match indicator under the confirm field. Both password fields have a show/hide toggle. Submitting creates the account and sends the user to the login page.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Events Page</summary>
+                    <div class="wireframe-wrap">
+                        <p>A grid of event cards each showing the title, date, location, description, and an RSVP button with a live interest count. Category filter dropdown at the top.</p>
+                        <img src="imgs/Events.png" alt="Events wireframe" style="max-width:500px;width:100%;border-radius:8px;border:1px solid #1e1e1e;">
+                    </div>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content">Added three sort buttons next to the category filter - Date, A-Z, and Time of Day. Events show up under group labels based on which sort is active. A My RSVPs badge in the top right shows how many events the user has RSVPd to. Events with no description no longer show an empty space.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Calendar Page</summary>
+                    <div class="wireframe-wrap">
+                        <p>A monthly calendar grid where clicking a day opens a modal with that day's events and RSVP buttons.</p>
+                    </div>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content">Added two more view modes on top of the monthly grid - Year View (all 12 months on one screen with a year dropdown) and List View (a scrollable list of upcoming events with RSVP). Switching between views happens instantly with no page reload.</p>
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Dashboard Page (Executives Only)</summary>
+                    <div class="wireframe-wrap">
+                        <p>Stat counter cards at the top, a bar chart for monthly event activity, and progress bars showing how much each sub-team contributed. Each logged contribution now has Edit and Delete buttons.</p>
+                        <img src="imgs/Dashboard.png" alt="Dashboard wireframe" style="max-width:500px;width:100%;border-radius:8px;border:1px solid #1e1e1e;">
+                    </div>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Event Creation Page (Executives Only)</summary>
+                    <div class="wireframe-wrap">
+                        <p>A form with fields for all event details. Submitting runs an INSERT INTO Events query. Only execs can access this page.</p>
+                        <img src="imgs/Event Creation Page.png" alt="Event creation wireframe" style="max-width:500px;width:100%;border-radius:8px;border:1px solid #1e1e1e;">
+                    </div>
+                </details>
+
+            </details>
+
+            <!-- 7. INCREMENTS -->
+            <details class="dropdown" open>
+                <summary>7. The Increments</summary>
+
+                <details class="dropdown" open>
+                    <summary>First Increment - Due: End of Week 10/11</summary>
+                    <p><strong>Goal:</strong> Get the basic foundation working. By the end of this increment a user should be able to log in, have their role picked up, and get sent to the right page.</p>
+                    <br>
+                    <p><strong>All members</strong> - Set up the database tables and seed data. Built the login page, session handling, and role-based redirect. Each person also put together the basic HTML layout and navigation for their assigned page.</p>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Second Increment - Due: End of Week 12</summary>
+                    <p><strong>Goal:</strong> Core event features working. Members can browse events and RSVP. Execs can create, edit, and delete events.</p>
+                    <br>
+                    <p><strong>Micai</strong> - Event cards layout, event creation form, edit and delete.</p>
+                    <p><strong>Sumer</strong> - RSVP toggle, INSERT/DELETE logic, live JavaScript counter.</p>
+                    <p><strong>Saharsh &amp; Angad</strong> - Dashboard layout and stat cards pulling real data from the database.</p>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Third Increment - Due: End of Week 13</summary>
+                    <p><strong>Goal:</strong> All the interactive features done. Dashboard fully working with the chart and productivity tracking.</p>
+                    <br>
+                    <p><strong>Saharsh</strong> - CSS bar chart for monthly event trends using GROUP BY.</p>
+                    <p><strong>Angad</strong> - Team productivity section, progress bars, exec log form.</p>
+                    <p><strong>Sumer</strong> - Category filter and event calendar with day modal and RSVP.</p>
+                    <p><strong>Micai</strong> - Events page polish, responsive fixes, testing.</p>
+                </details>
+
+                <details class="dropdown" open>
+                    <summary>Final Increment - Due: End of Week 14</summary>
+                    <p><strong>Goal:</strong> Ship everything from client feedback, test the full app end to end, and clean up the code.</p>
+                    <br>
+                    <div class="revised">
+                        <span class="revised-label">Revised</span>
+                        <p class="new-content">
+                            <strong>All members worked together equally on the following:</strong><br><br>
+                            - Built register.php: @mcmaster.ca email validation, bcrypt password hashing, password strength meter, confirm password match check, redirects to login on success.<br><br>
+                            - Extended calendar.php with Year View (12 mini-month cards, year dropdown, prev/next year buttons) and JS view switching between Calendar, Year, and List using addEventListener and data-view attributes.<br><br>
+                            - Added server-side sorting to events.php (Date, A-Z, Time of Day) with group labels for each sort. Moved the category filter server-side. Added the My RSVPs badge. Fixed empty description blank spaces.<br><br>
+                            - Added edit and delete for contribution entries on the dashboard. Each row gets Edit (pre-filled modal) and Delete (confirmation modal) buttons. Added edit_contribution.php and delete_contribution.php to handle the form submissions.<br><br>
+                            - Documentation pass on every file: header comments, JSDoc on every function, const/let throughout, no inline event handlers anywhere.
+                        </p>
+                        <p class="revision-note">Reason: Registration, year view, sorting, and contribution edit/delete all came out of client feedback after Increment 1. See Section 8 for details.</p>
+                    </div>
+                </details>
+
+            </details>
+
+            <!-- 8. CLIENT FEEDBACK -->
+            <details class="dropdown" open>
+                <summary>8. Client Feedback - First Increment</summary>
+
+                <p>After showing the first increment to the McMaster CSS executives, they gave us feedback on what they liked and what they wanted changed. Here is what they told us:</p>
+                <br>
+
+                <div class="feedback-block">
+                    <p class="feedback-quote">"We want a clean and simple interface - nothing overwhelming. Our members are not all super technical."</p>
+                    <p class="feedback-quote">"Tracking event interest and knowing how many people are actually coming is really important to us."</p>
+                    <p class="feedback-quote">"Too many features would make the app confusing and harder to learn. Keep it focused."</p>
+                    <p class="feedback-quote">"A card layout for events makes a lot of sense - title, date, location all in one place at a glance."</p>
+                    <p class="feedback-quote">"It would be great if new members could sign up themselves without us having to add them manually every time."</p>
+                    <p class="feedback-quote">"We plan events months in advance. Being able to see the whole year on one screen would really help us."</p>
+                    <p class="feedback-quote">"When there are a lot of events it gets hard to find what you're looking for. Some way to sort or organize them would be useful."</p>
+                </div>
+
+                <br>
+                <p>Here is what we changed based on that feedback:</p>
+                <br>
+
+                <ul>
+                    <li>
+                        <strong>Added member registration.</strong> The client said manually adding every new member was too much overhead. We built register.php so members can sign up on their own with an @mcmaster.ca email. Execs are still added through setup.sql.
+                    </li>
+                    <li>
+                        <strong>Added year view to the calendar.</strong> The client said they plan things months ahead and wanted to see the whole year at once. We added a Year View tab that shows all 12 months as small calendar cards with an event count badge on each, plus a dropdown to jump to different years.
+                    </li>
+                    <li>
+                        <strong>Added event sorting.</strong> The client said the list gets hard to search through as it grows. We added three sort options - Date, A-Z, and Time of Day - each with group labels to make scanning easier. Sorting is server-side so it works with the category filter at the same time.
+                    </li>
+                    <li>
+                        <strong>Cut features we did not need.</strong> Our original plan had a comment section on events and a member-facing productivity view. After the client said too many features would make things confusing, we dropped both of those.
+                    </li>
+                    <li>
+                        <strong>Made RSVP a priority in Increment 2.</strong> The client said tracking interest was the most important thing to them. We made sure the live RSVP counter shipped with the event cards in Increment 2 instead of leaving it for later.
+                    </li>
+                    <li>
+                        <strong>Locked in the card layout for events.</strong> The client confirmed they wanted title, date, and location visible right away without clicking anything. We made sure the event cards matched that. We also fixed it so events with no description do not show an empty gap.
+                    </li>
+                    <li>
+                        <strong>Simplified the dashboard.</strong> We had originally planned to track stats per individual member. After the client said to keep it simple, we changed it to team-level and sub-team-level progress bars instead.
+                    </li>
+                </ul>
+
+            </details>
+
+            <!-- 9. FILE STRUCTURE -->
+            <details class="dropdown" open>
+                <summary>9. Final File Structure <span class="new-section-label" style="margin-left:8px;">New</span></summary>
+
+                <div class="revised">
+                    <span class="new-section-label">New</span>
+                    <p class="new-content">Added for the final delivery to show everything included in the submitted zip file.</p>
+                </div>
+                <br>
+
+                <pre style="font-family:monospace;font-size:0.78rem;color:#888;line-height:1.8;background:#0d0d0d;padding:20px;border-radius:8px;border:1px solid #1a1a1a;overflow-x:auto;">
+css_dashboard/
+|
++-- login.php                  Login page + bcrypt authentication
++-- logout.php                 Session destroy + redirect
++-- register.php               Member self-registration (NEW)
++-- events.php                 Browse events + RSVP + sort/filter (UPDATED)
++-- calendar.php               Month / Year / List views (UPDATED)
++-- event_form.php             Create / Edit event form (exec only)
++-- event_delete.php           Delete event handler (exec only)
++-- rsvp.php                   AJAX RSVP toggle endpoint
++-- dashboard.php              Executive dashboard (UPDATED)
++-- log_contribution.php       Save team contribution (UPDATED)
++-- edit_contribution.php      Edit team contribution (NEW)
++-- delete_contribution.php    Delete team contribution (NEW)
+|
++-- includes/
+|   +-- auth.php               Session helpers, requireLogin(), requireExec()
+|   +-- db.php                 PDO connection
+|   +-- header.php             Shared HTML header + navbar
+|   +-- footer.php             Shared HTML footer + toast JS
+|
++-- setup.sql                  Creates all DB tables + seeds demo data
++-- my_style.css               Public site styles
++-- app_style.css              Dashboard app styles
+|
++-- index.html                 Home page
++-- about.html                 About Us / Team
++-- project.html               Projects index
++-- showcase.html              Showcase page
++-- web-design-critique.html   Web Design Critique
++-- client-report.html         Client Report
++-- dev-plan.html              Development Plan (this file)
+|
++-- imgs/                      All images, logos, portraits, wireframes
+|
++-- data/                      DB exports for submission
+    +-- users.sql
+    +-- events.sql
+    +-- rsvps.sql
+    +-- team_stats.sql
+    +-- organization_info.sql
+                </pre>
+            </details>
+
+        </div>
+    </main>
+
+</body>
+</html>
